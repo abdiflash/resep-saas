@@ -98,3 +98,4 @@ function bayarResep(id, harga) {
 }
 
 window.onload = fetchResep;
+
