@@ -1,14 +1,17 @@
+// Konfigurasi Format Rupiah
 const formatRupiah = (angka) => {
     return new Intl.NumberFormat('id-ID', {
         style: 'currency', currency: 'IDR', minimumFractionDigits: 0
     }).format(angka);
 };
 
+// Fungsi Utama Fetch Data
 async function fetchResep() {
     const loader = document.getElementById('loader');
     const grid = document.getElementById('resep-grid');
 
     try {
+        // Tambahkan timestamp untuk menghindari cache lama
         const response = await fetch(CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime());
         const data = await response.text();
         const rows = data.split('\n').filter(row => row.trim() !== '').slice(1);
@@ -30,6 +33,7 @@ async function fetchResep() {
                     img: cleanCols[6]
                 };
 
+                // Card Template
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
@@ -48,23 +52,26 @@ async function fetchResep() {
         });
         loader.classList.add('hidden');
         grid.classList.remove('hidden');
+
     } catch (error) {
         console.error(error);
         loader.innerHTML = "Gagal memuat data.";
     }
 }
 
+// Fungsi Buka Modal (Update: Ikon Gembok + Youtube)
 function openResep(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
 
-    // List bahan
+    // Rapikan daftar bahan menjadi list
     const daftarBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
     
-    // Icon SVG (Gembok & YouTube)
-    const iconLock = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+    // Ikon SVG (Gembok & YouTube)
+    const iconLock = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
     const iconYoutube = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>`;
 
+    // Render HTML Modal sesuai CSS baru
     content.innerHTML = `
         <div class="modal-header">
             <h2>${judul}</h2>
