@@ -1,126 +1,139 @@
-/* --- Root Variables & Reset --- */
-:root {
-    --primary: #4e342e;     /* Coklat Tua Utama */
-    --primary-dark: #3e2723; /* Coklat Lebih Gelap */
-    --accent: #d7ccc8;      /* Krem/Coklat Muda */
-    --text-dark: #3e2723;
-    --youtube-red: #c4302b; 
-    --bg-light: #f5f5f5;    /* Abu-abu hangat */
-    --white: #ffffff;
-    --shadow: 0 10px 25px -5px rgba(62, 39, 35, 0.15);
+/* Reset & Base */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+body { background-color: #f4f6f8; color: #333; }
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #d35400, #e67e22); /* Warna Oranye Segar */
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+header p { font-size: 1rem; opacity: 0.9; }
+
+/* Container Utama */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-body { background-color: var(--bg-light); color: var(--secondary); padding-bottom: 50px; }
-
-/* --- Header --- */
-.app-header {
-    background: linear-gradient(135deg, var(--primary), #fbbf24);
-    color: white; padding: 2rem 1rem; text-align: center;
-    border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
-    box-shadow: var(--shadow); margin-bottom: 20px;
-}
-
-/* --- Grid System --- */
-.container { padding: 0 20px; max-width: 800px; margin: 0 auto; }
+/* GRID SYSTEM (Agar muat banyak resep) */
 .resep-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Tetap 2 kolom di HP */
-    gap: 15px;
+    /* Otomatis mengatur jumlah kolom: 1 di HP, 2 di Tablet, 3-4 di PC */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding-bottom: 50px;
 }
 
-/* --- Recipe Cards (Perbaikan Judul) --- */
+/* Tampilan KARTU (Card) */
 .resep-card {
-    background: var(--white); border-radius: 16px;
-    overflow: hidden; box-shadow: var(--shadow);
-    display: flex; flex-direction: column;
-}
-
-.card-image { position: relative; height: 140px; background: #eee; }
-.card-image img { width: 100%; height: 100%; object-fit: cover; }
-
-.badge-harga {
-    position: absolute; top: 8px; right: 8px;
-    background: rgba(0, 0, 0, 0.8); color: white;
-    padding: 4px 8px; border-radius: 6px;
-    font-size: 0.7rem; font-weight: bold;
-}
-
-.card-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
-
-/* PERBAIKAN JUDUL: Agar tidak terpotong kaku */
-.card-info h3 {
-    font-size: 0.9rem; margin-bottom: 5px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Maksimal 2 baris */
-    -webkit-box-orient: vertical;
+    background: white;
+    border-radius: 15px;
     overflow: hidden;
-    line-height: 1.3;
-    height: 2.6em; /* Menjaga tinggi konsisten */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-.card-info p {
-    font-size: 0.75rem; color: #64748b;
-    margin-bottom: 10px; flex-grow: 1;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
+.resep-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-.card-info button {
-    background: var(--secondary); color: white;
-    border: none; padding: 8px; border-radius: 8px;
-    font-size: 0.8rem; width: 100%; cursor: pointer;
+/* Gambar di dalam Kartu */
+.card-image {
+    width: 100%;
+    height: 200px; /* Tinggi gambar seragam */
+    overflow: hidden;
+    position: relative;
 }
 
-/* --- Modal UX Baru (Scrollable) --- */
-.modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 999; display: flex; align-items: flex-end;
-}
-.modal-overlay {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
-}
-.modal-content {
-    position: relative; z-index: 1000;
-    background: white; width: 100%;
-    height: 85vh; /* Tinggi 85% layar agar lega */
-    border-top-left-radius: 25px; border-top-right-radius: 25px;
-    display: flex; flex-direction: column;
-    animation: slideUp 0.3s ease-out;
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Agar gambar tidak gepeng */
 }
 
-/* Header Modal (Judul & Close) */
-.modal-header {
-    padding: 20px; border-bottom: 1px solid #eee;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-shrink: 0; /* Header tidak ikut scroll */
-}
-.modal-header h2 { font-size: 1.2rem; max-width: 85%; }
-.close-btn {
-    background: #f1f5f9; border: none; width: 32px; height: 32px;
-    border-radius: 50%; font-size: 1.2rem; cursor: pointer;
-}
-
-/* Isi Modal (Bisa di-scroll) */
-.modal-body {
-    padding: 20px; overflow-y: auto; /* Scroll aktif di sini */
+/* Isi Kartu */
+.card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
 }
 
-.bahan-list { margin: 10px 0 20px 20px; font-size: 0.95rem; color: #334155; }
-.bahan-list li { margin-bottom: 6px; }
-
-/* Tombol YouTube Merah */
-.btn-youtube {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 14px;
-    background-color: var(--youtube-red);
-    color: white; border: none; border-radius: 12px;
-    font-weight: bold; font-size: 1rem; margin-top: 20px;
-    box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    line-height: 1.4;
 }
 
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.card-desc {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Batasi deskripsi cuma 2 baris */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.card-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e67e22; /* Warna harga oranye */
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Tombol */
+.btn-detail {
+    width: 100%;
+    padding: 12px;
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-detail:hover { background-color: #d35400; }
+
+/* Utilities */
 .hidden { display: none; }
+
+/* MODAL (Popup Detail) */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+.modal-content {
+    background: white; padding: 30px; border-radius: 15px;
+    max-width: 500px; width: 100%; position: relative;
+    max-height: 90vh; overflow-y: auto;
+}
+.close-btn {
+    position: absolute; top: 15px; right: 20px;
+    font-size: 24px; cursor: pointer; background: none; border: none;
+}
+.btn-youtube {
+    width: 100%; background: #c0392b; color: white; padding: 15px;
+    border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+}
