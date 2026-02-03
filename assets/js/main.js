@@ -10,17 +10,26 @@ async function fetchResep() {
     const grid = document.getElementById('resep-grid');
 
     try {
-        const response = await fetch(CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime());
+        // Cache busting agar data selalu fresh
+        const url = CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime();
+        const response = await fetch(url);
         const data = await response.text();
+        
+        // Parsing CSV
         const rows = data.split('\n').filter(row => row.trim() !== '').slice(1);
         
-        grid.innerHTML = '';
+        grid.innerHTML = ''; // Bersihkan loader
+        let kartuDibuat = 0;
 
-        rows.forEach(row => {
+        rows.forEach((row) => {
+            // Regex cerdas untuk memisahkan koma dalam CSV tapi mengabaikan koma dalam tanda kutip
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
 
-            if (cleanCols.length > 1 && cleanCols[7]?.toLowerCase() === 'published') {
+            // Pastikan data ada isinya dan status Published
+            const status = cleanCols[7] ? cleanCols[7].toLowerCase() : "";
+            
+            if (cleanCols.length > 1 && status === 'published') {
                 const resep = {
                     id: cleanCols[0],
                     judul: cleanCols[1],
@@ -31,70 +40,69 @@ async function fetchResep() {
                     img: cleanCols[6]
                 };
 
-                // Card Template
+                // BUAT KARTU HTML (Sesuai Desain Baru)
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
                     <div class="card-image">
                         <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
-                        <div class="badge-harga">${formatRupiah(resep.harga).replace('Rp', '')}</div>
                     </div>
-                    <div class="card-info">
-                        <h3>${resep.judul}</h3>
-                        <p>${resep.deskripsi}</p>
-                        <button onclick="openResep('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}')">Lihat Detail</button>
+                    <div class="card-content">
+                        <h3 class="card-title">${resep.judul}</h3>
+                        <p class="card-desc">${resep.deskripsi}</p>
+                        
+                        <div class="card-price">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            ${formatRupiah(resep.harga)}
+                        </div>
+
+                        <button class="btn-detail" onclick="openResep('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}')">
+                            Lihat Detail
+                        </button>
                     </div>
                 `;
                 grid.appendChild(card);
+                kartuDibuat++;
             }
         });
-        loader.classList.add('hidden');
-        grid.classList.remove('hidden');
+
+        if (kartuDibuat === 0) {
+             loader.innerHTML = "Belum ada resep yang dipublish.";
+        } else {
+             loader.classList.add('hidden'); // Sembunyikan loader jika ada data
+        }
 
     } catch (error) {
-        console.error(error);
-        loader.innerHTML = "Gagal memuat data.";
+        console.error("Error:", error);
+        loader.innerHTML = "Gagal memuat data. Cek koneksi internet.";
     }
 }
 
-// Fungsi Buka Modal dengan UX Baru
+// Fungsi Modal Popup (Sama seperti sebelumnya)
 function openResep(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
-
-    // Rapikan daftar bahan
     const daftarBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
     
-    // Ikon YouTube (SVG)
-    const iconYoutube = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>`;
-
     content.innerHTML = `
         <div class="modal-header">
             <h2>${judul}</h2>
             <button class="close-btn" onclick="closeModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <h4 style="margin-bottom:10px; color:#64748b;">Bahan-bahan:</h4>
-            <ul class="bahan-list">${daftarBahan}</ul>
-            
-            <div style="margin-top: 30px; text-align: center; padding: 20px; background: #fef2f2; border-radius: 12px;">
-                <p style="font-size: 0.9rem; margin-bottom: 10px;">Ingin melihat tutorial lengkapnya?</p>
-                <button class="btn-youtube" onclick="bayarResep('${id}', '${harga}')">
-                    ${iconYoutube} 
-                    Buka Video (${formatRupiah(harga)})
-                </button>
-            </div>
+            <h4 style="margin-bottom:10px;">Bahan-bahan:</h4>
+            <ul style="margin-bottom:20px; padding-left:20px;">${daftarBahan}</ul>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <p>Ingin melihat video tutorial lengkap?</p>
+            <button class="btn-youtube" onclick="bayarResep('${id}', '${harga}')">
+                Buka Video (${formatRupiah(harga)})
+            </button>
         </div>
     `;
     modal.classList.remove('hidden');
 }
 
-function closeModal() {
-    document.getElementById('modalResep').classList.add('hidden');
-}
-
-function bayarResep(id, harga) {
-    alert(`Membuka pembayaran Midtrans untuk: ${id} senilai ${formatRupiah(harga)}`);
-}
+function closeModal() { document.getElementById('modalResep').classList.add('hidden'); }
+function bayarResep(id, harga) { alert(`Membuka pembayaran untuk: ${id}`); }
 
 window.onload = fetchResep;
