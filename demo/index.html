@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Resep - Warisan Dapur Nusantara</title>
+    
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_CLIENT_KEY"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-content">
+            <h1 id="chefName">Warisan Dapur</h1>
+            <p>Koleksi Resep Rahasia Keluarga</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="loader" class="loader-container">
+            <div class="spinner"></div>
+            <p>Sedang meracik bumbu resep...</p>
+        </div>
+
+        <div id="resep-grid" class="resep-grid hidden">
+            </div>
+    </main>
+
+    <div id="modalResep" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="detailContent">
+                </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
