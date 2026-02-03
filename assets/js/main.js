@@ -1,11 +1,9 @@
-// Konfigurasi Rupiah
 const formatRupiah = (angka) => {
     return new Intl.NumberFormat('id-ID', {
         style: 'currency', currency: 'IDR', minimumFractionDigits: 0
     }).format(angka);
 };
 
-// Fungsi Utama
 async function fetchResep() {
     const loader = document.getElementById('loader');
     const grid = document.getElementById('resep-grid');
@@ -23,7 +21,7 @@ async function fetchResep() {
         rows.forEach((row) => {
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
-            const status = cleanCols[7] ? cleanCols[7].toLowerCase() : "";
+            const status = (cleanCols[7] || "").toLowerCase();
             
             if (cleanCols.length > 1 && status === 'published') {
                 const resep = {
@@ -35,19 +33,18 @@ async function fetchResep() {
                     img: cleanCols[6]
                 };
 
-                // STRUKTUR HTML DISESUAIKAN DENGAN CSS ANDA
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
                     <div class="card-image">
                         <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                        <div class="badge-harga">${formatRupiah(resep.harga).replace('Rp', '').trim()}</div>
+                        <div class="badge-harga">${formatRupiah(resep.harga).replace('Rp', 'Rp ')}</div>
                     </div>
                     <div class="card-info">
                         <h3>${resep.judul}</h3>
                         <p>${resep.deskripsi}</p>
-                        <button onclick="bukaModalDetail('${resep.id}', '${escapeHtml(resep.judul)}', '${escapeHtml(resep.bahan)}', '${resep.harga}')">
-                            Lihat Resep
+                        <button onclick="openModal('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}')">
+                            Lihat Detail
                         </button>
                     </div>
                 `;
@@ -56,16 +53,15 @@ async function fetchResep() {
             }
         });
         
-        if(kartuDibuat > 0) loader.style.display = 'none';
+        if(kartuDibuat > 0) loader.classList.add('hidden');
 
     } catch (error) {
         console.error(error);
-        loader.innerHTML = "Gagal memuat data.";
+        loader.innerHTML = "Gagal memuat data resep.";
     }
 }
 
-// Fungsi Buka Modal (Disesuaikan dengan struktur CSS Modal UX Baru)
-function bukaModalDetail(id, judul, bahan, harga) {
+function openModal(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
     const listBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
@@ -73,31 +69,26 @@ function bukaModalDetail(id, judul, bahan, harga) {
     content.innerHTML = `
         <div class="modal-header">
             <h2>${judul}</h2>
-            <button class="close-btn" onclick="tutupModal()">&times;</button>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <h4 style="margin-bottom:10px;">Bahan-bahan:</h4>
+            <h4 style="margin-bottom:10px;">Bahan-bahan (Gratis):</h4>
             <ul class="bahan-list">${listBahan}</ul>
-            
+            <p>Ingin melihat video tutorial rahasia?</p>
             <button class="btn-youtube" onclick="bayarResep('${id}')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                Buka Video Tutorial (${formatRupiah(harga)})
+                Tonton Video Lengkap (${formatRupiah(harga)})
             </button>
         </div>
     `;
     modal.classList.remove('hidden');
 }
 
-function tutupModal() {
+function closeModal() {
     document.getElementById('modalResep').classList.add('hidden');
 }
 
 function bayarResep(id) {
-    alert("Fitur bayar untuk ID: " + id);
-}
-
-function escapeHtml(text) {
-    return text.replace(/'/g, "&#039;").replace(/"/g, "&quot;");
+    alert("Proses pembayaran untuk resep ID: " + id);
 }
 
 window.onload = fetchResep;
