@@ -4,40 +4,49 @@ async function fetchResep() {
     const grid = document.getElementById('resep-grid');
 
     try {
-        const response = await fetch(CONFIG.SHEET_CSV_URL);
+        // Tambahkan timestamp agar browser tidak mengambil data lama (cache)
+        const response = await fetch(CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime());
         const data = await response.text();
         
-        // Memecah CSV menjadi baris
-        const rows = data.split('\n').slice(1); 
+        // Memecah CSV menjadi baris dan membersihkan baris kosong
+        const rows = data.split('\n').filter(row => row.trim() !== '').slice(1); 
         grid.innerHTML = '';
 
+        if (rows.length === 0) {
+            loader.innerHTML = "⚠️ Belum ada resep yang dipublikasikan.";
+            return;
+        }
+
         rows.forEach(row => {
-            // Memecah kolom (asumsi pemisah koma)
+            // Regex khusus untuk menangani koma di dalam teks yang diapit tanda kutip
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
             
-            if (cols.length > 1 && cols[7]?.trim().toLowerCase() === 'published') {
+            // Membersihkan tanda kutip ekstra yang sering ditambahkan Google Sheets
+            const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+
+            // Cek apakah kolom Status (H) berisi 'published'
+            if (cleanCols.length > 1 && cleanCols[7]?.toLowerCase() === 'published') {
                 const resep = {
-                    id: cols[0].trim(),
-                    judul: cols[1].trim(),
-                    deskripsi: cols[2].trim(),
-                    bahan: cols[3].trim(),
-                    video: cols[4].trim(),
-                    harga: cols[5].trim(),
-                    img: cols[6].trim()
+                    id: cleanCols[0],
+                    judul: cleanCols[1],
+                    deskripsi: cleanCols[2],
+                    bahan: cleanCols[3],
+                    video: cleanCols[4],
+                    harga: cleanCols[5] || "0",
+                    img: cleanCols[6]
                 };
 
-                // Membuat elemen Kartu Resep
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
                     <div class="card-image">
                         <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300x200?text=Foto+Masakan'">
-                        <div class="badge-harga">Rp ${parseInt(resep.harga).toLocaleString()}</div>
+                        <div class="badge-harga">Rp ${parseInt(resep.harga).toLocaleString('id-ID')}</div>
                     </div>
                     <div class="card-info">
                         <h3>${resep.judul}</h3>
                         <p>${resep.deskripsi.substring(0, 60)}...</p>
-                        <button onclick="openResep('${resep.id}', '${resep.judul}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}', '${resep.video}')">Lihat Detail</button>
+                        <button onclick="openResep('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}', '${resep.video}')">Lihat Detail</button>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -48,7 +57,7 @@ async function fetchResep() {
         grid.classList.remove('hidden');
     } catch (error) {
         console.error("Gagal load data:", error);
-        loader.innerHTML = "❌ Gagal memuat data. Pastikan Google Sheet sudah 'Publish to Web'.";
+        loader.innerHTML = "❌ Koneksi gagal. Pastikan link CSV di config.js sudah benar.";
     }
 }
 
@@ -57,7 +66,7 @@ function openResep(id, judul, bahan, harga, video) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
 
-    // Mengubah teks bahan menjadi daftar (bullet points)
+    // Mengubah teks bahan menjadi daftar
     const daftarBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
 
     content.innerHTML = `
@@ -68,26 +77,19 @@ function openResep(id, judul, bahan, harga, video) {
         <div class="paywall-section">
             <p>Ingin melihat video tutorial rahasia?</p>
             <button class="btn-bayar" onclick="bayarResep('${id}', '${harga}')">
-                Buka Video (Rp ${parseInt(harga).toLocaleString()})
+                Buka Video (Rp ${parseInt(harga).toLocaleString('id-ID')})
             </button>
         </div>
     `;
     modal.classList.remove('hidden');
 }
 
-// Fungsi Tutup Modal
 function closeModal() {
     document.getElementById('modalResep').classList.add('hidden');
 }
 
-// Fungsi Integrasi Midtrans (Sistem Gembok)
 function bayarResep(resepId, harga) {
-    // Di sini nanti kita hubungkan dengan API Midtrans Split Payment
-    alert("Memicu Pembayaran Midtrans untuk Resep ID: " + resepId + " senilai Rp " + harga);
-    
-    // Contoh Simulasi Jika Sukses Bayar:
-    // snap.pay('SNAP_TOKEN_DARI_BACKEND', { ... logic ... });
+    alert("Memicu Pembayaran Midtrans untuk Resep ID: " + resepId + " senilai Rp " + parseInt(harga).toLocaleString('id-ID'));
 }
 
-// Jalankan fungsi saat halaman dimuat
 window.onload = fetchResep;
