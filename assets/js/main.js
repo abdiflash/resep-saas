@@ -1,4 +1,4 @@
-// Konfigurasi Format Rupiah
+// ... (Bagian atas formatRupiah tetap sama) ...
 const formatRupiah = (angka) => {
     return new Intl.NumberFormat('id-ID', {
         style: 'currency', currency: 'IDR', minimumFractionDigits: 0
@@ -10,23 +10,18 @@ async function fetchResep() {
     const grid = document.getElementById('resep-grid');
 
     try {
-        // Cache busting agar data selalu fresh
         const url = CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime();
         const response = await fetch(url);
         const data = await response.text();
         
-        // Parsing CSV
         const rows = data.split('\n').filter(row => row.trim() !== '').slice(1);
         
-        grid.innerHTML = ''; // Bersihkan loader
+        grid.innerHTML = ''; 
         let kartuDibuat = 0;
 
         rows.forEach((row) => {
-            // Regex cerdas untuk memisahkan koma dalam CSV tapi mengabaikan koma dalam tanda kutip
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
-
-            // Pastikan data ada isinya dan status Published
             const status = cleanCols[7] ? cleanCols[7].toLowerCase() : "";
             
             if (cleanCols.length > 1 && status === 'published') {
@@ -40,22 +35,21 @@ async function fetchResep() {
                     img: cleanCols[6]
                 };
 
-                // BUAT KARTU HTML (Sesuai Desain Baru)
+                // PERBAIKAN DI SINI:
+                // Hapus via.placeholder.com. Jika error, ganti dengan warna abu-abu saja.
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
-                    <div class="card-image">
-                        <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                    <div class="card-image" style="background-color: #eee; display: flex; align-items: center; justify-content: center;">
+                        <img src="${resep.img}" alt="${resep.judul}" style="width:100%; height:100%; object-fit:cover;" 
+                             onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\\'color:#aaa; font-size:0.8rem\\'>Gambar Tidak Tersedia</span>'">
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">${resep.judul}</h3>
                         <p class="card-desc">${resep.deskripsi}</p>
-                        
                         <div class="card-price">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            ${formatRupiah(resep.harga)}
+                             <span>🏷️</span> ${formatRupiah(resep.harga)}
                         </div>
-
                         <button class="btn-detail" onclick="openResep('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}')">
                             Lihat Detail
                         </button>
@@ -65,35 +59,32 @@ async function fetchResep() {
                 kartuDibuat++;
             }
         });
-
-        if (kartuDibuat === 0) {
-             loader.innerHTML = "Belum ada resep yang dipublish.";
-        } else {
-             loader.classList.add('hidden'); // Sembunyikan loader jika ada data
-        }
+        
+        if(kartuDibuat > 0) loader.classList.add('hidden');
 
     } catch (error) {
-        console.error("Error:", error);
-        loader.innerHTML = "Gagal memuat data. Cek koneksi internet.";
+        console.error(error);
+        loader.innerHTML = "Gagal memuat data.";
     }
 }
 
-// Fungsi Modal Popup (Sama seperti sebelumnya)
+// ... (function openResep, closeModal, bayarResep TETAP SAMA seperti sebelumnya) ...
+// Pastikan function openResep Anda benar seperti di bawah ini:
+
 function openResep(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
     const daftarBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
     
+    // Kita paksa warna teks jadi hitam agar tidak "invisible"
     content.innerHTML = `
-        <div class="modal-header">
-            <h2>${judul}</h2>
+        <div class="modal-header" style="color: #333;">
+            <h2 style="margin-right: 30px;">${judul}</h2>
             <button class="close-btn" onclick="closeModal()">&times;</button>
         </div>
-        <div class="modal-body">
-            <h4 style="margin-bottom:10px;">Bahan-bahan:</h4>
-            <ul style="margin-bottom:20px; padding-left:20px;">${daftarBahan}</ul>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-            <p>Ingin melihat video tutorial lengkap?</p>
+        <div class="modal-body" style="color: #555;">
+            <h4 style="margin:15px 0 10px;">Bahan-bahan:</h4>
+            <ul style="padding-left:20px; margin-bottom:20px;">${daftarBahan}</ul>
             <button class="btn-youtube" onclick="bayarResep('${id}', '${harga}')">
                 Buka Video (${formatRupiah(harga)})
             </button>
@@ -102,7 +93,7 @@ function openResep(id, judul, bahan, harga) {
     modal.classList.remove('hidden');
 }
 
+// JANGAN LUPA INI DI BAGIAN BAWAH
 function closeModal() { document.getElementById('modalResep').classList.add('hidden'); }
 function bayarResep(id, harga) { alert(`Membuka pembayaran untuk: ${id}`); }
-
 window.onload = fetchResep;
