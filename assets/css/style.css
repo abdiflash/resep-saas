@@ -1,0 +1,141 @@
+/* --- Root Variables (Tema Coklat) --- */
+:root {
+    --primary: #4e342e;     /* Coklat Tua Utama */
+    --primary-dark: #3e2723; /* Coklat Lebih Gelap */
+    --accent: #d7ccc8;      /* Krem/Coklat Muda */
+    --text-dark: #3e2723;
+    --youtube-red: #c4302b; 
+    --bg-light: #f5f5f5;    /* Abu-abu hangat */
+    --white: #ffffff;
+    --shadow: 0 10px 25px -5px rgba(62, 39, 35, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+body { background-color: var(--bg-light); color: var(--text-dark); padding-bottom: 50px; }
+
+/* --- Header --- */
+.app-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--accent); padding: 2rem 1rem; text-align: center;
+    border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
+    box-shadow: var(--shadow); margin-bottom: 25px;
+}
+.app-header h1 { color: white; margin-bottom: 5px; }
+
+/* --- Grid System --- */
+.container { padding: 0 20px; max-width: 800px; margin: 0 auto; }
+.resep-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+/* --- Recipe Cards --- */
+.resep-card {
+    background: var(--white); border-radius: 16px;
+    overflow: hidden; box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    transition: transform 0.2s;
+}
+.resep-card:active { transform: scale(0.98); }
+
+.card-image { position: relative; height: 140px; background: #eee; }
+.card-image img { width: 100%; height: 100%; object-fit: cover; }
+
+.badge-harga {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(62, 39, 35, 0.9); /* Background Coklat Transparan */
+    color: white; padding: 4px 10px; border-radius: 8px;
+    font-size: 0.75rem; font-weight: bold;
+}
+
+.card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+
+.card-info h3 {
+    font-size: 1rem; margin-bottom: 6px; color: var(--primary-dark);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; height: 2.8em; line-height: 1.4;
+}
+
+.card-info p {
+    font-size: 0.8rem; color: #795548; /* Coklat Text */
+    margin-bottom: 12px; flex-grow: 1;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.card-info button {
+    background: var(--primary); color: white;
+    border: none; padding: 10px; border-radius: 10px;
+    font-weight: 600; cursor: pointer; width: 100%;
+}
+
+/* --- Modal UX Baru (Tengah & Tidak Full Width) --- */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 999; display: flex; align-items: flex-end; justify-content: center; /* Posisi Tengah */
+    padding-bottom: 0;
+}
+
+.modal-overlay {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(62, 39, 35, 0.7); /* Overlay Coklat Gelap */
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    position: relative; z-index: 1000;
+    background: white; 
+    width: 100%; max-width: 500px; /* MEMBATASI LEBAR AGAR TIDAK FULL */
+    height: 80vh; 
+    border-top-left-radius: 25px; border-top-right-radius: 25px;
+    display: flex; flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+}
+
+/* Header Modal */
+.modal-header {
+    padding: 25px 25px 15px 25px; /* Padding lebih lega */
+    display: flex; justify-content: space-between; align-items: start;
+    flex-shrink: 0; border-bottom: 1px solid #efebe9;
+}
+.modal-header h2 { font-size: 1.3rem; color: var(--primary-dark); line-height: 1.3; }
+.close-btn {
+    background: #efebe9; border: none; width: 36px; height: 36px;
+    border-radius: 50%; font-size: 1.5rem; color: var(--primary);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+/* Body Modal (Scrollable) */
+.modal-body {
+    padding: 25px; /* Padding kiri-kanan agar teks tidak mepet */
+    overflow-y: auto; flex-grow: 1;
+}
+
+.bahan-list { 
+    margin: 10px 0 30px 20px; 
+    font-size: 1rem; color: #5d4037; line-height: 1.6; 
+}
+
+/* Area Tombol Video */
+.paywall-box {
+    text-align: center; padding: 25px;
+    background: #fff8e1; border: 2px dashed #ffecb3;
+    border-radius: 16px; margin-top: 10px;
+}
+
+/* Tombol YouTube Merah */
+.btn-youtube {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px;
+    background-color: var(--youtube-red);
+    color: white; border: none; border-radius: 12px;
+    font-weight: bold; font-size: 1rem; margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(196, 48, 43, 0.3);
+    cursor: pointer;
+}
+
+/* Animasi Slide Up */
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.hidden { display: none; }
