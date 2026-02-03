@@ -1,30 +1,25 @@
-// Fungsi Utama untuk Mengambil Data dari Google Sheets
+// Konfigurasi Format Rupiah
+const formatRupiah = (angka) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+    }).format(angka);
+};
+
 async function fetchResep() {
     const loader = document.getElementById('loader');
     const grid = document.getElementById('resep-grid');
 
     try {
-        // Tambahkan timestamp agar browser tidak mengambil data lama (cache)
         const response = await fetch(CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime());
         const data = await response.text();
+        const rows = data.split('\n').filter(row => row.trim() !== '').slice(1);
         
-        // Memecah CSV menjadi baris dan membersihkan baris kosong
-        const rows = data.split('\n').filter(row => row.trim() !== '').slice(1); 
         grid.innerHTML = '';
 
-        if (rows.length === 0) {
-            loader.innerHTML = "⚠️ Belum ada resep yang dipublikasikan.";
-            return;
-        }
-
         rows.forEach(row => {
-            // Regex khusus untuk menangani koma di dalam teks yang diapit tanda kutip
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
-            
-            // Membersihkan tanda kutip ekstra yang sering ditambahkan Google Sheets
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
 
-            // Cek apakah kolom Status (H) berisi 'published'
             if (cleanCols.length > 1 && cleanCols[7]?.toLowerCase() === 'published') {
                 const resep = {
                     id: cleanCols[0],
@@ -36,49 +31,59 @@ async function fetchResep() {
                     img: cleanCols[6]
                 };
 
+                // Card Template
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
                     <div class="card-image">
-                        <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300x200?text=Foto+Masakan'">
-                        <div class="badge-harga">Rp ${parseInt(resep.harga).toLocaleString('id-ID')}</div>
+                        <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <div class="badge-harga">${formatRupiah(resep.harga).replace('Rp', '')}</div>
                     </div>
                     <div class="card-info">
                         <h3>${resep.judul}</h3>
-                        <p>${resep.deskripsi.substring(0, 60)}...</p>
-                        <button onclick="openResep('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}', '${resep.video}')">Lihat Detail</button>
+                        <p>${resep.deskripsi}</p>
+                        <button onclick="openResep('${resep.id}', '${resep.judul.replace(/'/g, "\\'")}', '${resep.bahan.replace(/'/g, "\\'")}', '${resep.harga}')">Lihat Detail</button>
                     </div>
                 `;
                 grid.appendChild(card);
             }
         });
-
         loader.classList.add('hidden');
         grid.classList.remove('hidden');
+
     } catch (error) {
-        console.error("Gagal load data:", error);
-        loader.innerHTML = "❌ Koneksi gagal. Pastikan link CSV di config.js sudah benar.";
+        console.error(error);
+        loader.innerHTML = "Gagal memuat data.";
     }
 }
 
-// Fungsi Membuka Modal Detail
-function openResep(id, judul, bahan, harga, video) {
+// Fungsi Buka Modal dengan UX Baru
+function openResep(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
 
-    // Mengubah teks bahan menjadi daftar
+    // Rapikan daftar bahan
     const daftarBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
+    
+    // Ikon YouTube (SVG)
+    const iconYoutube = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>`;
 
     content.innerHTML = `
-        <h2 class="modal-title">${judul}</h2>
-        <div class="section-title">Bahan-bahan (Gratis):</div>
-        <ul class="bahan-list">${daftarBahan}</ul>
-        
-        <div class="paywall-section">
-            <p>Ingin melihat video tutorial rahasia?</p>
-            <button class="btn-bayar" onclick="bayarResep('${id}', '${harga}')">
-                Buka Video (Rp ${parseInt(harga).toLocaleString('id-ID')})
-            </button>
+        <div class="modal-header">
+            <h2>${judul}</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h4 style="margin-bottom:10px; color:#64748b;">Bahan-bahan:</h4>
+            <ul class="bahan-list">${daftarBahan}</ul>
+            
+            <div style="margin-top: 30px; text-align: center; padding: 20px; background: #fef2f2; border-radius: 12px;">
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">Ingin melihat tutorial lengkapnya?</p>
+                <button class="btn-youtube" onclick="bayarResep('${id}', '${harga}')">
+                    ${iconYoutube} 
+                    Buka Video (${formatRupiah(harga)})
+                </button>
+            </div>
         </div>
     `;
     modal.classList.remove('hidden');
@@ -88,8 +93,8 @@ function closeModal() {
     document.getElementById('modalResep').classList.add('hidden');
 }
 
-function bayarResep(resepId, harga) {
-    alert("Memicu Pembayaran Midtrans untuk Resep ID: " + resepId + " senilai Rp " + parseInt(harga).toLocaleString('id-ID'));
+function bayarResep(id, harga) {
+    alert(`Membuka pembayaran Midtrans untuk: ${id} senilai ${formatRupiah(harga)}`);
 }
 
 window.onload = fetchResep;
