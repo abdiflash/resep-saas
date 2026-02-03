@@ -5,3 +5,4 @@ const CONFIG = {
     MIDTRANS_CLIENT_KEY: "Mid-client-MK-5yLAVCdP0Yd_o",
     PLATFORM_FEE_PERCENT: 15
 };
+
