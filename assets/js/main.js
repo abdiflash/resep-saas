@@ -1,36 +1,30 @@
-// Helper: Format Rupiah
+// Konfigurasi Rupiah
 const formatRupiah = (angka) => {
     return new Intl.NumberFormat('id-ID', {
         style: 'currency', currency: 'IDR', minimumFractionDigits: 0
     }).format(angka);
 };
 
-// Fungsi Utama: Ambil Data dari Google Sheet
+// Fungsi Utama
 async function fetchResep() {
     const loader = document.getElementById('loader');
     const grid = document.getElementById('resep-grid');
 
     try {
-        // Tambah cache busting agar data selalu baru
         const url = CONFIG.SHEET_CSV_URL + "&cache=" + new Date().getTime();
         const response = await fetch(url);
-        
-        if (!response.ok) throw new Error("Gagal mengambil data");
-        
         const data = await response.text();
+        
         const rows = data.split('\n').filter(row => row.trim() !== '').slice(1);
         
-        grid.innerHTML = ''; // Bersihkan area
-        let jumlahResep = 0;
+        grid.innerHTML = ''; 
+        let kartuDibuat = 0;
 
         rows.forEach((row) => {
-            // Pemisahan kolom CSV yang aman
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
-
-            // Pastikan status Published
             const status = cleanCols[7] ? cleanCols[7].toLowerCase() : "";
-
+            
             if (cleanCols.length > 1 && status === 'published') {
                 const resep = {
                     id: cleanCols[0],
@@ -41,47 +35,40 @@ async function fetchResep() {
                     img: cleanCols[6]
                 };
 
-                // Buat Kartu Resep HTML
+                // STRUKTUR HTML DISESUAIKAN DENGAN CSS ANDA
                 const card = document.createElement('div');
                 card.className = 'resep-card';
                 card.innerHTML = `
                     <div class="card-image">
                         <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                        <div class="badge-harga">${formatRupiah(resep.harga).replace('Rp', '').trim()}</div>
                     </div>
-                    <div class="card-content">
-                        <h3 class="card-title">${resep.judul}</h3>
-                        <p class="card-desc">${resep.deskripsi}</p>
-                        <div class="card-price">🏷️ ${formatRupiah(resep.harga)}</div>
-                        <button class="btn-detail" onclick="bukaModalDetail('${resep.id}', '${escapeHtml(resep.judul)}', '${escapeHtml(resep.bahan)}', '${resep.harga}')">
-                            Lihat Detail
+                    <div class="card-info">
+                        <h3>${resep.judul}</h3>
+                        <p>${resep.deskripsi}</p>
+                        <button onclick="bukaModalDetail('${resep.id}', '${escapeHtml(resep.judul)}', '${escapeHtml(resep.bahan)}', '${resep.harga}')">
+                            Lihat Resep
                         </button>
                     </div>
                 `;
                 grid.appendChild(card);
-                jumlahResep++;
+                kartuDibuat++;
             }
         });
-
-        // Hilangkan tulisan "Sedang memuat..." jika data sudah ada
-        if (jumlahResep > 0) {
-            loader.style.display = 'none';
-        } else {
-            loader.innerHTML = "Belum ada resep yang tersedia.";
-        }
+        
+        if(kartuDibuat > 0) loader.style.display = 'none';
 
     } catch (error) {
-        console.error("Error:", error);
-        loader.innerHTML = "Gagal memuat data. Cek koneksi atau link Google Sheet.";
+        console.error(error);
+        loader.innerHTML = "Gagal memuat data.";
     }
 }
 
-// Fungsi Buka Modal (Popup)
+// Fungsi Buka Modal (Disesuaikan dengan struktur CSS Modal UX Baru)
 function bukaModalDetail(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
-    
-    // Format bahan menjadi list
-    const listBahan = bahan.split(',').map(item => `<li>${item.trim()}</li>`).join('');
+    const listBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
 
     content.innerHTML = `
         <div class="modal-header">
@@ -89,38 +76,28 @@ function bukaModalDetail(id, judul, bahan, harga) {
             <button class="close-btn" onclick="tutupModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <h4>Bahan-bahan:</h4>
-            <ul>${listBahan}</ul>
-            <div class="modal-action">
-                <p>Ingin lihat tutorial lengkapnya?</p>
-                <button class="btn-youtube" onclick="bayarResep('${id}')">
-                    Buka Video (${formatRupiah(harga)})
-                </button>
-            </div>
+            <h4 style="margin-bottom:10px;">Bahan-bahan:</h4>
+            <ul class="bahan-list">${listBahan}</ul>
+            
+            <button class="btn-youtube" onclick="bayarResep('${id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Buka Video Tutorial (${formatRupiah(harga)})
+            </button>
         </div>
     `;
     modal.classList.remove('hidden');
 }
 
-// Fungsi Tutup Modal
 function tutupModal() {
     document.getElementById('modalResep').classList.add('hidden');
 }
 
-// Fungsi Bayar (Placeholder)
 function bayarResep(id) {
-    alert("Fitur pembayaran untuk ID: " + id + " akan segera hadir!");
+    alert("Fitur bayar untuk ID: " + id);
 }
 
-// Helper: Mencegah error tanda kutip pada HTML
 function escapeHtml(text) {
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return text.replace(/'/g, "&#039;").replace(/"/g, "&quot;");
 }
 
-// Jalankan saat halaman siap
 window.onload = fetchResep;
