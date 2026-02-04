@@ -81,9 +81,12 @@ function bukaModalDetail(id, judul, bahan, harga) {
         <div class="modal-body">
             <h4 style="margin-bottom:10px; color: #3d2b1f;">Bahan-bahan:</h4>
             <ul class="bahan-list">${listBahan}</ul>
-            <button class="btn-youtube" style="background-color: #3d2b1f;" onclick="window.open('https://wa.me/628123456789?text=Saya+ingin+resep+${judul}')">
+            
+            <button class="btn-youtube" onclick="window.open('https://wa.me/628123456789?text=Saya+ingin+resep+${judul}')">
                 Tonton Video (${formatRupiah(harga)})
             </button>
+            
+            <div style="height: 30px;"></div> 
         </div>
     `;
     modal.classList.remove('hidden');
