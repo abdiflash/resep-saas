@@ -22,11 +22,13 @@ async function fetchResep() {
             
             if (cleanCols.length > 1 && status === 'published') {
                 
-                // --- TEKNIK RAW=1 DROPBOX ---
-                let finalImg = cleanCols[6]; // Kolom G (Thumbnail)
+                // --- OTOMATISASI LINK DROPBOX (0 ke 1 via raw=1) ---
+                let finalImg = cleanCols[6]; // Mengambil data kolom G
                 if (finalImg && typeof finalImg === 'string' && finalImg.includes('dropbox.com')) {
-                    // Mengganti dl=0 atau dl=1 menjadi raw=1 agar direct link
+                    // Teknik mengganti karakter belakang secara otomatis
                     finalImg = finalImg.replace(/dl=0/g, 'raw=1').replace(/dl=1/g, 'raw=1');
+                    
+                    // Memastikan parameter raw=1 ada jika link tidak punya parameter
                     if (!finalImg.includes('raw=1')) {
                         finalImg += finalImg.includes('?') ? '&raw=1' : '?raw=1';
                     }
@@ -45,7 +47,7 @@ async function fetchResep() {
                 card.className = 'resep-card';
                 card.innerHTML = `
                     <div class="card-image">
-                        <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300?text=Foto+Mama+Love'">
+                        <img src="${resep.img}" alt="${resep.judul}" onerror="this.src='https://via.placeholder.com/300?text=Warisan+Dapur'">
                         <div class="badge-harga">${formatRupiah(resep.harga).replace('Rp', '').trim()}</div>
                     </div>
                     <div class="card-info">
@@ -60,44 +62,31 @@ async function fetchResep() {
             }
         });
         
-        loader.style.display = 'none';
+        if (loader) loader.style.display = 'none';
     } catch (error) {
-        loader.innerHTML = "Gagal memuat data.";
+        if (loader) loader.innerHTML = "Gagal memuat data.";
     }
 }
 
 function bukaModalDetail(id, judul, bahan, harga) {
     const modal = document.getElementById('modalResep');
     const content = document.getElementById('detailContent');
-    
-    // Menangani daftar bahan agar lebih rapi
     const listBahan = bahan.split(',').map(b => `<li>${b.trim()}</li>`).join('');
 
     content.innerHTML = `
         <div class="modal-header">
-            <h2>${judul}</h2>
+            <h2 style="color: #3d2b1f;">${judul}</h2>
             <button class="close-btn" onclick="tutupModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <h4 style="margin-bottom:10px;">Bahan-bahan:</h4>
+            <h4 style="margin-bottom:10px; color: #3d2b1f;">Bahan-bahan:</h4>
             <ul class="bahan-list">${listBahan}</ul>
-            
-            <div style="margin-top:20px; padding:15px; background:#fdf8f5; border-radius:12px; text-align:center;">
-                <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">Ingin melihat tutorial lengkapnya?</p>
-                <button class="btn-youtube" onclick="konfirmasiWA('${judul}', '${harga}')">
-                    Buka Video (${formatRupiah(harga)})
-                </button>
-            </div>
+            <button class="btn-youtube" style="background-color: #3d2b1f;" onclick="window.open('https://wa.me/628123456789?text=Saya+ingin+resep+${judul}')">
+                Tonton Video (${formatRupiah(harga)})
+            </button>
         </div>
     `;
     modal.classList.remove('hidden');
-}
-
-// Fungsi Tambahan: Chat WA otomatis untuk konfirmasi
-function konfirmasiWA(judul, harga) {
-    const noWA = "628123456789"; // GANTI DENGAN NOMOR ANDA
-    const pesan = `Halo Warisan Dapur Mama Love, saya ingin membeli akses video resep: *${judul}* seharga ${formatRupiah(harga)}.`;
-    window.open(`https://wa.me/${noWA}?text=${encodeURIComponent(pesan)}`, '_blank');
 }
 
 function tutupModal() {
