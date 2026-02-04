@@ -1,11 +1,24 @@
 /* --- Root Variables & Reset --- */
 :root {
-    --primary: #f59e0b;
-    --secondary: #1e293b;
-    --youtube-red: #FF0000;
-    --bg-light: #f8fafc;
+    --primary: #3d2b1f; /* Cokelat Tua solid */
+    --secondary: #3d2b1f; /* Senada dengan tombol */
+    --youtube-red: #cc0000;
+    --bg-light: #fdfaf7; /* Warna krem agar estetik dengan cokelat */
     --white: #ffffff;
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Tambahan agar info kontak rapi */
+.header-contact {
+    font-size: 0.85rem;
+    margin-top: 12px;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+}
+
+.app-header h1 {
+    font-weight: 800;
+    letter-spacing: 1px;
 }
 
 * { 
