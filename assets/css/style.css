@@ -77,14 +77,14 @@ body {
 .modal {
     position: fixed;
     top: 0; left: 0;
-    width: 100vw; 
-    height: 100vh; /* WAJIB: Kunci tinggi modal setinggi layar */
+    width: 100%; 
+    height: 100%; /* WAJIB: Mengunci area modal setinggi layar */
     z-index: 9999;
     display: flex;
     align-items: center; 
     justify-content: center;
     padding: 20px;
-    overflow: hidden; /* Mencegah layar utama ikut scroll */
+    overflow: hidden; /* Mencegah body utama ikut scroll */
 }
 
 .modal-overlay {
@@ -100,79 +100,6 @@ body {
     background: white;
     width: 100%;
     max-width: 450px; 
-    max-height: 85vh; /* WAJIB: Batasi tinggi kartu agar scroll muncul */
-    border-radius: 24px;
-    display: flex;
-    flex-direction: column; /* Membagi header dan body secara vertikal */
-    box-shadow: var(--shadow);
-    overflow: hidden; 
-    animation: fadeIn 0.3s ease-out;
-}
-
-.modal-header {
-    padding: 20px 24px;
-    background: white;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0; /* Header tidak akan mengecil */
-}
-
-.modal-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-
-.close-btn {
-    background: #f1f5f9; border: none;
-    width: 32px; height: 32px;
-    border-radius: 50%; font-size: 1.2rem;
-    cursor: pointer; color: #64748b;
-    display: flex; align-items: center; justify-content: center;
-}
-
-.modal-body {
-    padding: 24px;
-    overflow-y: auto; /* INI KUNCI SCROLL NYA */
-    flex-grow: 1; /* Mengambil sisa ruang modal-content */
-    background: white;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Style list bahan */
-.bahan-list {
-    list-style: none;
-    margin-bottom: 24px;
-}
-.bahan-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid #f8fafc;
-    font-size: 0.95rem;
-    color: #334155;
-}
-.bahan-list li::before {
-    content: "•"; color: var(--primary);
-    font-weight: bold; margin-right: 10px;
-}
-
-.btn-youtube {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    background-color: var(--primary);
-    color: white;
-    text-align: center;
-    border-radius: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    margin-bottom: 20px; /* Ruang napas di bawah tombol */
-}
-
-/* Scrollbar tipis elegan (Cokelat agar terlihat) */
-.modal-body::-webkit-scrollbar { width: 5px; }
-.modal-body::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.hidden { display: none !important; }
+    
+    /* KUNCI SCROLL 1: Membatasi tinggi kartu maksimal 80% dari tinggi layar */
+    max-height:
