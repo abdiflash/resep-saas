@@ -90,6 +90,9 @@ function bukaModalDetail(id, judul, bahan, harga) {
         </div>
     `;
     modal.classList.remove('hidden');
+    // Tambahkan ini agar setiap dibuka, scroll selalu balik ke atas
+    const modalBody = document.querySelector('.modal-body');
+    if (modalBody) modalBody.scrollTop = 0;
 }
 
 function tutupModal() {
