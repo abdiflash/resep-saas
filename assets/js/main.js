@@ -50,7 +50,7 @@ async function fetchResep() {
                     labelInfo: cleanCols[5] || "Umum", 
                     img: finalImg,             // Col G
                     // Col I (Index 8) -> LINK YOUTUBE (Wajib ada di Sheet kolom I)
-                    linkVideo: cleanCols[8] || "#"
+                    linkVideo: cleanCols[4] || "#"
                 };
 
                 semuaResep.push(resep);
