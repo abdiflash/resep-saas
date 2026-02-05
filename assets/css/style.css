@@ -32,7 +32,7 @@ body {
     margin-bottom: 25px;
 }
 
-.app-header h1 { font-size: 1.8rem; margin-bottom: 5px; font-weight: 800; }
+.app-header h1 { font-size: 1.8rem; margin-bottom: 5px; font-weight: 800; letter-spacing: -0.5px; }
 
 /* --- Grid System --- */
 .container { padding: 0 15px; max-width: 800px; margin: 0 auto; }
@@ -51,6 +51,7 @@ body {
     display: flex; 
     flex-direction: column;
     transition: transform 0.2s;
+    cursor: pointer;
 }
 .resep-card:active { transform: scale(0.98); }
 
@@ -73,7 +74,10 @@ body {
     font-weight: 600; width: 100%; cursor: pointer;
 }
 
-/* --- MODAL FIX: ELEGANT FLOATING CARD --- */
+/* =========================================
+   MODAL SCROLL FIX (FINAL VERSION)
+   ========================================= */
+
 .modal {
     position: fixed;
     top: 0; left: 0;
@@ -84,7 +88,7 @@ body {
     align-items: center; 
     justify-content: center;
     padding: 20px;
-    overflow: hidden; /* Mencegah body utama ikut scroll */
+    overflow: hidden; /* Mencegah halaman belakang ikut scroll */
 }
 
 .modal-overlay {
@@ -101,5 +105,101 @@ body {
     width: 100%;
     max-width: 450px; 
     
-    /* KUNCI SCROLL 1: Membatasi tinggi kartu maksimal 80% dari tinggi layar */
-    max-height:
+    /* KUNCI 1: Batasi tinggi kartu maksimal 85% dari tinggi layar */
+    max-height: 85vh; 
+    
+    /* KUNCI 2: Flexbox Column agar bisa membagi Header & Body */
+    display: flex;
+    flex-direction: column; 
+    
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden; 
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* HEADER: Tidak boleh mengecil (fixed height content) */
+.modal-header {
+    padding: 20px 24px;
+    background: white;
+    border-bottom: 1px solid #f1f5f9;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    flex-shrink: 0; /* JANGAN DIHAPUS: Mencegah header gepeng */
+    z-index: 10;
+}
+
+.modal-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+
+.close-btn {
+    background: #f1f5f9; border: none;
+    width: 32px; height: 32px;
+    border-radius: 50%; font-size: 1.2rem;
+    cursor: pointer; color: #64748b;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* BODY: Bagian yang boleh di-scroll */
+.modal-body {
+    padding: 24px;
+    background: white;
+    
+    /* KUNCI 3: Aktifkan scroll vertikal */
+    overflow-y: auto !important; 
+    
+    /* KUNCI 4: Isi sisa ruang yang ada */
+    flex: 1; 
+    
+    /* KUNCI 5: Hack Flexbox agar scrollbar mau muncul */
+    min-height: 0; 
+    
+    -webkit-overflow-scrolling: touch; /* Scroll halus di iPhone */
+}
+
+/* Style list bahan */
+.bahan-list {
+    list-style: none;
+    margin-bottom: 24px;
+}
+.bahan-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f8fafc;
+    font-size: 0.95rem;
+    color: #334155;
+    display: flex;
+    align-items: flex-start;
+}
+.bahan-list li::before {
+    content: "•"; color: var(--primary);
+    font-weight: bold; margin-right: 12px;
+}
+
+.btn-youtube {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    background-color: var(--primary);
+    color: white;
+    text-align: center;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: 10px; /* Jarak dari bawah */
+}
+
+/* Scrollbar styling agar terlihat rapi */
+.modal-body::-webkit-scrollbar { width: 6px; }
+.modal-body::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+.modal-body::-webkit-scrollbar-track { background: transparent; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.hidden { display: none !important; }
