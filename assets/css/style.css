@@ -160,7 +160,7 @@ body {
     overflow-y: auto;    /* Munculkan scroll jika teks kepanjangan */
     display: block;      /* Pastikan blok normal */
     line-height: 1.5;    /* Jarak antar baris enak dibaca */
-    padding-right: 5px;  /* Jarak sedikit dari scrollbar */
+    padding: 0 8px;  /* Memberi jarak 8px di kiri dan kanan */
 }
 
 /* --- TAMBAHAN: MEMPERCANTIK SCROLLBAR (Opsional biar rapi) --- */
