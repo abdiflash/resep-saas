@@ -148,11 +148,34 @@ body {
     font-size: 0.7rem; font-weight: 700;
 }
 
-.card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-.card-info h3 { font-size: 1rem; margin-bottom: 5px; color: var(--primary); }
+/* --- GANTI BAGIAN INI DI STYLE.CSS --- */
+
 .card-info p { 
-    font-size: 0.8rem; color: #666; margin-bottom: 15px; flex-grow: 1;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    font-size: 0.85rem; 
+    color: #666; 
+    margin-bottom: 15px; 
+    
+    /* AGAR KARTU RATA & BISA SCROLL */
+    height: 80px;        /* Tinggi tetap untuk area teks */
+    overflow-y: auto;    /* Munculkan scroll jika teks kepanjangan */
+    display: block;      /* Pastikan blok normal */
+    line-height: 1.5;    /* Jarak antar baris enak dibaca */
+    padding-right: 5px;  /* Jarak sedikit dari scrollbar */
+}
+
+/* --- TAMBAHAN: MEMPERCANTIK SCROLLBAR (Opsional biar rapi) --- */
+.card-info p::-webkit-scrollbar {
+    width: 4px; /* Scrollbar tipis */
+}
+.card-info p::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+.card-info p::-webkit-scrollbar-thumb {
+    background: #ccc; 
+    border-radius: 4px;
+}
+.card-info p::-webkit-scrollbar-thumb:hover {
+    background: #aaa; 
 }
 .card-info button {
     background: var(--primary); color: white; border: none; 
