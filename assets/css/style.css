@@ -148,6 +148,27 @@ body {
     font-size: 0.7rem; font-weight: 700;
 }
 
+/* --- TAMBAHKAN BAGIAN INI --- */
+
+.card-info {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-info h3 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: var(--primary);
+    
+    /* INI YANG MEMBUAT RATA TENGAH */
+    text-align: center;
+    font-weight: 800;
+}
+
+/* --------------------------- */
+
 /* --- GANTI BAGIAN INI DI STYLE.CSS --- */
 
 .card-info p { 
