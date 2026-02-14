@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Chef Edueasy</title>
+    <title>Demo Chef Edueasy - Warisan Dapur Mama Love</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,15 +14,32 @@
 <body>
 
     <header class="app-header">
-        <h1>WARISAN DAPUR MAMA LOVE</h1>
-        <div class="header-contact" style="font-size: 0.8rem; opacity: 0.9; margin-top: 5px;">
-            <span>📞 0812-XXXX-XXXX</span> | 
-            <span>📸 @warisandapur_mamalove</span>
+        <div class="header-content">
+            <h1>WARISAN DAPUR MAMA LOVE</h1>
+            <div class="header-contact">
+                <span>📞 0812-XXXX-XXXX</span> | 
+                <span>📸 @warisandapur_mamalove</span>
+            </div>
         </div>
     </header>
 
+    <div class="search-wrapper">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Mau masak apa hari ini? (Misal: Ayam)..." onkeyup="filterResep()">
+            
+            <div class="category-buttons">
+                <button class="btn-filter active" onclick="filterKategori('all', this)">Semua</button>
+                <button class="btn-filter" onclick="filterKategori('makanan', this)">Makanan</button>
+                <button class="btn-filter" onclick="filterKategori('minuman', this)">Minuman</button>
+                <button class="btn-filter" onclick="filterKategori('snack', this)">Cemilan</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <div id="loader" style="text-align:center; padding: 40px; color:#666;">Memuat Resep...</div>
+        <div id="loader" style="text-align:center; padding: 40px; color:#666;">
+            <p>Sedang mengambil data resep...</p>
+        </div>
         
         <div id="resep-grid" class="resep-grid"></div>
     </div>
@@ -32,7 +49,7 @@
         
         <div class="modal-content">
             <div class="modal-header">
-                <h2></h2>
+                <h2>Detail Resep</h2>
                 <button class="close-btn" onclick="tutupModal()">&times;</button>
             </div>
 
