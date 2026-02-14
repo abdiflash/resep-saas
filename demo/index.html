@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Chef Edueasy</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>WARISAN DAPUR MAMA LOVE</h1>
+        <div class="header-contact" style="font-size: 0.8rem; opacity: 0.9; margin-top: 5px;">
+            <span>📞 0812-XXXX-XXXX</span> | 
+            <span>📸 @warisandapur_mamalove</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="loader" style="text-align:center; padding: 40px; color:#666;">Memuat Resep...</div>
+        
+        <div id="resep-grid" class="resep-grid"></div>
+    </div>
+
+    <div id="modalResep" class="modal hidden">
+        <div class="modal-overlay" onclick="tutupModal()"></div>
+        
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2></h2>
+                <button class="close-btn" onclick="tutupModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script> 
+    <script src="../assets/js/main.js"></script>
+
+</body>
+</html>
